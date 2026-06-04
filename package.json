@@ -4,5 +4,8 @@
   "scripts": {
     "start": "cd server && npm start",
     "postinstall": "cd server && npm install"
+  },
+  "dependencies": {
+    "puppeteer": "^22.0.0"
   }
 }

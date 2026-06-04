@@ -35,6 +35,40 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+    if (isWhatsAppConnected) {
+        return res.send('<h1 style="font-family:sans-serif; text-align:center; margin-top:50px; color:green;">🟢 WhatsApp Bot is Connected and Running!</h1>');
+    }
+    if (qrCodeData) {
+        return res.send(`
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+                <style>body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f4f4f9; margin: 0; }</style>
+            </head>
+            <body>
+                <div style="background:white; padding:30px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.1); text-align:center;">
+                    <h2 style="color:#333; margin-top:0;">Scan to Connect WhatsApp</h2>
+                    <p style="color:#666; margin-bottom:20px;">Open WhatsApp > Linked Devices > Link a Device</p>
+                    <div id="qrcode" style="display:flex; justify-content:center;"></div>
+                </div>
+                <script>
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: "${qrCodeData}",
+                        width: 256,
+                        height: 256
+                    });
+                    // Refresh the page every 15 seconds to get the newest QR code
+                    setTimeout(() => location.reload(), 15000);
+                </script>
+            </body>
+            </html>
+        `);
+    }
+    res.send('<h1 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#555;">⏳ Starting up WhatsApp client... please refresh in a few seconds.</h1>');
+});
+
 // --- WhatsApp Engine Setup ---
 let qrCodeData = null;
 let isWhatsAppConnected = false;

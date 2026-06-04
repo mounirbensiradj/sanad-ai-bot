@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai = null;
 
 // ─────────────────────────────────────────────
 // SYSTEM PROMPT — Sanad AI WhatsApp Sales Agent
@@ -167,6 +165,14 @@ GENERAL   → أي شي ثاني: سلام، سؤال عام، شرح خدمات
 
 export async function processMessage(userMessage, chatHistory = []) {
   try {
+    if (!openai) {
+      console.log("Checking Environment Variables:", Object.keys(process.env));
+      if (!process.env.OPENAI_API_KEY) {
+         console.error("FATAL: OPENAI_API_KEY is missing from process.env!");
+      }
+      openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    }
+
     // Format previous history for OpenAI context
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },

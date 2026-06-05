@@ -7,6 +7,8 @@ const supabaseUrl = 'https://afgqbqfcdqhsoawqqffr.supabase.co';
 const supabaseAnonKey = 'sb_publishable_hwBHA3d2WJBylkrkpU7Xdw_r1As3B-_';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 export default function App() {
   const [waStatus, setWaStatus] = useState({ connected: false, qr: null });
   const [messages, setMessages] = useState([]);
@@ -18,7 +20,7 @@ export default function App() {
 
   const checkWhatsAppStatus = async () => {
     try {
-      const res = await fetch('http://localhost:3001/api/whatsapp/status');
+      const res = await fetch(`${API_URL}/api/whatsapp/status`);
       const data = await res.json();
       setWaStatus(data);
     } catch (err) { console.error(err); } finally { setLoading(false); }
@@ -26,7 +28,7 @@ export default function App() {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch('http://localhost:3001/api/messages');
+      const res = await fetch(`${API_URL}/api/messages`);
       setMessages(await res.json());
     } catch (err) { console.error(err); }
   };
@@ -35,18 +37,18 @@ export default function App() {
     if (!window.confirm('Disconnect this WhatsApp number?')) return;
     setUploading(true);
     try {
-      await fetch('http://localhost:3001/api/whatsapp/logout', { method: 'POST' });
+      await fetch(`${API_URL}/api/whatsapp/logout`, { method: 'POST' });
       setWaStatus({ connected: false, qr: null });
     } catch (err) { alert('Disconnect failed: ' + err.message); }
     finally { setUploading(false); }
   };
 
   const fetchLeads = async () => {
-    try { setLeads(await (await fetch('http://localhost:3001/api/leads')).json()); } catch (err) { console.error(err); }
+    try { setLeads(await (await fetch(`${API_URL}/api/leads`)).json()); } catch (err) { console.error(err); }
   };
 
   const fetchAppointments = async () => {
-    try { setAppointments(await (await fetch('http://localhost:3001/api/appointments')).json()); } catch (err) { console.error(err); }
+    try { setAppointments(await (await fetch(`${API_URL}/api/appointments`)).json()); } catch (err) { console.error(err); }
   };
 
   useEffect(() => {
@@ -187,7 +189,7 @@ export default function App() {
                             <button
                               className="btn btn-sm btn-ghost"
                               onClick={async () => {
-                                await fetch('http://localhost:3001/api/quick-action', {
+                                await fetch(`${API_URL}/api/quick-action`, {
                                   method: 'POST',
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ phone, action: 'booking' })
